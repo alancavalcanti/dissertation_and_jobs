@@ -1,12 +1,25 @@
 install.packages("vctrs")
 install.packages("electionsBR")
+install.packages("readr")
+library(readr)
 
 library(electionsBR)
+library(tidyverse)
+
+
 
 df_2014 <- candidate_fed(year = 2014)
 df_2018 <- candidate_fed(year = 2018)
 df_2022 <- candidate_fed(year = 2022)
 
+
+
+candidatos <- select(df_intersec, NM_URNA_CANDIDATO.x)
+
+
+df_2022 <- read.csv("consulta_cand_2022_BRASIL.csv")
+
+df_2022 <- consulta_cand_2022_BRASIL
 
 years <- c(2014, 2018, 2022)
 
