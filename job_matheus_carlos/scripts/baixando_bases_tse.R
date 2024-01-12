@@ -12,11 +12,12 @@ df_2014 <- candidate_fed(year = 2014)
 df_2018 <- candidate_fed(year = 2018)
 df_2022 <- candidate_fed(year = 2022)
 
+rm(df_2020)
 
 
 candidatos <- select(df_intersec, NM_URNA_CANDIDATO.x)
 
-
+df_1996 <- consulta_cand_1996_BRASIL
 df_2022 <- read.csv("consulta_cand_2022_BRASIL.csv")
 
 df_2022 <- consulta_cand_2022_BRASIL
