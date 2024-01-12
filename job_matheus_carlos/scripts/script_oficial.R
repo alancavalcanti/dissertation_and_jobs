@@ -1,7 +1,4 @@
 install.packages("vctrs")
-install.packages("electionsBR")
-
-remove.packages("electionsBR")
 
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("silvadenisson/electionsBR")
@@ -86,8 +83,6 @@ df_2002<- elections_tse(year = 2002, type = "candidate")
 df_2006<- elections_tse(year = 2006, type = "candidate")
 df_2010<- elections_tse(year = 2010, type = "candidate")
 
-#base de 1996 foi baixada manualmente pelo site do TSE
-df_1996<- read_excel("C:/Users/User/Desktop/job matheus/consulta_cand_1996_BRASIL.xlsx")
 
 ####eleições municipais
 df_2000<- elections_tse(year = 2000, type = "candidate")
