@@ -199,8 +199,9 @@ base_final$carreira <- base_final$carreira + ifelse(base_final$ANO_ELEICAO == 20
 #adicionando a variável "carreira_cargo" na base_final
 base_final$carreira_cargo <- sapply(base_final$NR_CPF_CANDIDATO, calcular_carreira_cargo, bases = lapply(bases_anteriores, get))
 
-#Atribuindo "DEPUTADO FEDERAL" nos casos específicos
+#atribuindo "DEPUTADO FEDERAL" nos casos específicos
 base_final$carreira_cargo[base_final$carreira == 4 & base_final$ANO_ELEICAO == 2018] <- "DEPUTADO FEDERAL"
 base_final$carreira_cargo[base_final$carreira == 8 & base_final$ANO_ELEICAO == 2022] <- "DEPUTADO FEDERAL"
 
-
+#salvando base final
+save(base_final, file = "base_final.Rda")
