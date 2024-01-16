@@ -15,6 +15,7 @@ df_2022 <- candidate_fed(year = 2022)
 
 
 #a base de 2022 foi importada localmente depois de baixá-la do site do TSe pois ela não está no electionsBR
+consulta_cand_2022_BRASIL <- read_excel("consulta_cand_2022_BRASIL.xlsx")
 df_2022 <- consulta_cand_2022_BRASIL
 
 save(df_2014, file = "df_2014.Rda")
@@ -89,8 +90,7 @@ df_2000<- elections_tse(year = 2000, type = "candidate")
 df_2004<- elections_tse(year = 2004, type = "candidate")
 df_2008<- elections_tse(year = 2008, type = "candidate")
 df_2012<- elections_tse(year = 2012, type = "candidate")
-df_2016<- elections_tse(year = 2016, type = "candidate")
-df_2020<- elections_tse(year = 2020, type = "candidate")
+
 
 
 #filtrando pelos cargos eleitos
@@ -197,6 +197,30 @@ base_final$carreira_cargo <- sapply(base_final$NR_CPF_CANDIDATO, calcular_carrei
 #atribuindo "DEPUTADO FEDERAL" nos casos específicos
 base_final$carreira_cargo[base_final$carreira == 4 & base_final$ANO_ELEICAO == 2018] <- "DEPUTADO FEDERAL"
 base_final$carreira_cargo[base_final$carreira == 8 & base_final$ANO_ELEICAO == 2022] <- "DEPUTADO FEDERAL"
+
+
+
+# Adicionando a variável de tempo de carreira ao dataframe "base_final"
+base_final$TEMPO_DE_CARREIRA <- sapply(1:nrow(base_final), function(i) {
+  cpf <- base_final$NR_CPF_CANDIDATO[i]
+  
+  # Calculando a contagem de bases até 2012
+  contagem_bases <- sum(sapply(bases_anteriores, function(base_name) {
+    base <- get(base_name)
+    if (cpf %in% base$NR_CPF_CANDIDATO && base$ANO_ELEICAO[cpf == base$NR_CPF_CANDIDATO] <= 2012) {
+      return(1)
+    } else {
+      return(0)
+    }
+  }))
+  
+  # Adicionando anos de carreira e considerando 4 anos para 2018 e 8 anos para 2022
+  anos_carreira <- contagem_bases * 4
+  anos_carreira <- anos_carreira + ifelse(base_final$ANO_ELEICAO[i] == 2018, 4, ifelse(base_final$ANO_ELEICAO[i] == 2022, 8, 0))
+  
+  return(anos_carreira)
+})
+
 
 #salvando base final
 save(base_final, file = "base_final.Rda")

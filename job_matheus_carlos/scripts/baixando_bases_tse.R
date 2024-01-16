@@ -12,7 +12,7 @@ df_2014 <- candidate_fed(year = 2014)
 df_2018 <- candidate_fed(year = 2018)
 df_2022 <- candidate_fed(year = 2022)
 
-rm(df_2020)
+rm(base_final)
 
 
 candidatos <- select(df_intersec, NM_URNA_CANDIDATO.x)
