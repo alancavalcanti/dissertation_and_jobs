@@ -6,6 +6,11 @@ library(readr)
 library(electionsBR)
 library(tidyverse)
 
+unique_values <- unique(receitas_candidatos$`Fonte de receita`)
+unique_cargo <- unique(receitas_candidatos$`Cargo`)
+unique_candidatura <- unique(receitas_candidatos$`Situação de candidatura`)
+unique_tot <- unique(receitas_candidatos$`Situação de totalização`)
+print(unique_tot)
 
 
 df_2014 <- candidate_fed(year = 2014)

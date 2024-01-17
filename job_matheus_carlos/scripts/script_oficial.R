@@ -224,3 +224,90 @@ base_final$TEMPO_DE_CARREIRA <- sapply(1:nrow(base_final), function(i) {
 
 #salvando base final
 save(base_final, file = "base_final.Rda")
+
+
+
+#adicionando variáveis de financiamento de campanha na base de dados
+
+#PRIMEIRO PASSO: IMPORTAR A BASE "receitas_candidatos" das eleições de 2018 e 2022
+
+
+#####2018####
+#####filtrando pelos deputados eleitos em 2014, 18 e 22
+
+receitas_candidatos <- receitas_candidatos %>%
+  rename(NM_CANDIDATO = `Nome candidato`)
+
+#filtre apenas os casos presentes na "base_final"
+receitas_filtradas <- receitas_candidatos %>%
+  filter(NM_CANDIDATO %in% base_final$NM_CANDIDATO)
+
+#transformando a os valores para soma
+receitas_filtradas$`Valor de receita` <- as.numeric(gsub(",", "", receitas_filtradas$`Valor de receita`))
+
+#agregando por tipo de receita e deputado
+receitas_agregadas <- receitas_filtradas %>%
+  group_by(NM_CANDIDATO, `Fonte de receita`) %>%
+  summarise(Valor_Total = sum(`Valor de receita`))
+
+#reshape 
+receitas_wide <- receitas_agregadas %>%
+  pivot_wider(names_from = `Fonte de receita`, values_from = Valor_Total, values_fill = 0)
+
+#criando variável de ano
+receitas_wide$ANO_ELEICAO <- 2018
+
+#juntando com base_final 
+base_final <- left_join(base_final, receitas_wide, by = c("NM_CANDIDATO" = "NM_CANDIDATO", "ANO_ELEICAO" = "ANO_ELEICAO"))
+
+
+#####2022####
+
+#####filtrando pelos deputados eleitos em 2014, 18 e 22
+
+receitas_candidatos_1_ <- receitas_candidatos_1_ %>%
+  rename(NM_CANDIDATO = `Nome candidato`)
+
+#filtre apenas os casos presentes na "base_final"
+receitas_filtradas_1_ <- receitas_candidatos_1_ %>%
+  filter(NM_CANDIDATO %in% base_final$NM_CANDIDATO)
+
+#transformando a os valores para soma
+receitas_filtradas_1_$`Valor de receita` <- as.numeric(gsub(",", "", receitas_filtradas_1_$`Valor de receita`))
+
+#agregando por tipo de receita e deputado
+receitas_agregadas_1_ <- receitas_filtradas_1_ %>%
+  group_by(NM_CANDIDATO, `Fonte de receita`) %>%
+  summarise(Valor_Total = sum(`Valor de receita`))
+
+#reshape 
+receitas_wide_1_ <- receitas_agregadas_1_ %>%
+  pivot_wider(names_from = `Fonte de receita`, values_from = Valor_Total, values_fill = 0)
+
+#criando variável de ano
+receitas_wide_1_$ANO_ELEICAO <- 2022
+
+#juntando com base_final 
+# Supondo que você já tenha carregado a "base_final" e "receitas_wide_1"
+
+# Supondo que você já tenha carregado a "base_final" e "receitas_wide_1"
+
+# Junte a "base_final" com "receitas_wide_1" considerando o ano
+resultado_final <- left_join(base_final, receitas_wide_1_, by = c("NM_CANDIDATO", "ANO_ELEICAO"))
+
+# Substitua os valores faltantes na "base_final" pelos valores correspondentes em "receitas_wide_1"
+resultado_final <- resultado_final %>%
+  mutate(
+    FUNDO_PARTIDARIO = coalesce(`FUNDO PARTIDARIO.x`, `FUNDO PARTIDARIO.y`),
+    OUTROS_RECURSOS = coalesce(`OUTROS RECURSOS.x`, `OUTROS RECURSOS.y`),
+    FUNDO_ESPECIAL = coalesce(`FUNDO ESPECIAL.x`, `FUNDO ESPECIAL.y`)
+  ) %>%
+  select(-ends_with(".y"))
+#removendo variaveis a mais
+resultado_final <- resultado_final %>%
+  select(-c(`FUNDO ESPECIAL.x`, `FUNDO PARTIDARIO.x`, `OUTROS RECURSOS.x`))
+
+
+base_final <- resultado_final
+
+save(base_final, file = "base_final.Rda")
