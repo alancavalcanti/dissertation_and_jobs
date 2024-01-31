@@ -605,23 +605,9 @@ legislatura_mesa_56 <- subset(legislaturasMesas, idLegislatura == 56)
 # Criar a base para legislatura 57
 legislatura_mesa_57 <- subset(legislaturasMesas, idLegislatura == 57)
 
-
-legislatura_mesa_55$ANO_ELEICAO <- 2014
-legislatura_mesa_56$ANO_ELEICAO <- 2018
-legislatura_mesa_57$ANO_ELEICAO <- 2022
-
-
-legislatura_mesa_55 <- select(legislatura_mesa_55, idDeputado, nomeDeputado, cargo, ANO_ELEICAO)
-legislatura_mesa_56 <- select(legislatura_mesa_56, idDeputado, nomeDeputado, cargo, ANO_ELEICAO)
-legislatura_mesa_57 <- select(legislatura_mesa_57, idDeputado, nomeDeputado, cargo, ANO_ELEICAO)
-
-
 legislatura_mesa_55 <- rename(legislatura_mesa_55, deputado_.id = idDeputado)
 legislatura_mesa_56 <- rename(legislatura_mesa_56, deputado_.id = idDeputado)
 legislatura_mesa_57 <- rename(legislatura_mesa_57, deputado_.id = idDeputado)
-
-
-
 
 #filtrando casos específicos
 legislatura_mesa_55 <- legislatura_mesa_55 %>%
@@ -633,12 +619,179 @@ legislatura_mesa_56 <- legislatura_mesa_56 %>%
 legislatura_mesa_57 <- legislatura_mesa_57 %>%
   filter(deputado_.id %in% base_final$deputado_.id,)
 
-#juntando na base final
+
+
+# Selecione apenas as variáveis necessárias
+legislatura_mesa_55 <- legislatura_mesa_55 %>%
+  select(deputado_.id, nomeDeputado, cargo, dataInicio, dataFim)
+
+# Crie uma nova variável de ano
+legislatura_mesa_55 <- legislatura_mesa_55 %>%
+  mutate(ANO_ELEICAO = as.integer(substr(dataInicio, 1, 4)))
+
+# Selecione apenas as variáveis necessárias
+legislatura_mesa_56 <- legislatura_mesa_56 %>%
+  select(deputado_.id, nomeDeputado, cargo, dataInicio, dataFim)
+
+# Crie uma nova variável de ano
+legislatura_mesa_56 <- legislatura_mesa_56 %>%
+  mutate(ANO_ELEICAO = as.integer(substr(dataInicio, 1, 4)))
+
+# Selecione apenas as variáveis necessárias
+legislatura_mesa_57 <- legislatura_mesa_57 %>%
+  select(deputado_.id, nomeDeputado, cargo, dataInicio, dataFim)
+
+# Crie uma nova variável de ano
+legislatura_mesa_57 <- legislatura_mesa_57 %>%
+  mutate(ANO_ELEICAO = as.integer(substr(dataInicio, 1, 4)))
+
+
+
+# Selecione as colunas relevantes para o seu problema
+df <- legislatura_mesa_55 %>%
+  select(deputado_.id, nomeDeputado, cargo, dataInicio, dataFim)
+
+# Converta as colunas de data para o formato Date
+df$dataInicio <- as.Date(df$dataInicio)
+df$dataFim <- as.Date(df$dataFim)
+
+# Crie uma função para expandir o intervalo de datas
+expandir_intervalo <- function(df) {
+  anos <- seq(df$dataInicio, df$dataFim, by = "year")
+  df_expandido <- data.frame(
+    deputado_.id = rep(df$deputado_.id, length(anos)),
+    deputadoNome = rep(df$nomeDeputado, length(anos)),
+    cargo = rep(df$cargo, length(anos)),
+    ANO_ELEICAO = format(anos, "%Y")
+  )
+  return(df_expandido)
+}
+
+# Aplique a função para expandir o intervalo a cada linha do seu dataframe
+legislatura_mesa_55 <- df %>%
+  rowwise() %>%
+  do(expandir_intervalo(.))
+
+
+#excluindo casos excedentes
+condicao <- legislatura_mesa_55$deputadoNome == "Gilberto Nascimento" & legislatura_mesa_55$ANO_ELEICAO == 2017  
+indices_linhas <- which(condicao)
+legislatura_mesa_55 <- legislatura_mesa_55[-indices_linhas, ]
+
+condicao <- legislatura_mesa_55$deputadoNome == "Giacobo" & legislatura_mesa_55$ANO_ELEICAO == 2017 &  legislatura_mesa_55$cargo == "2º Vice-Presidente"
+indices_linhas <- which(condicao)
+legislatura_mesa_55 <- legislatura_mesa_55[-indices_linhas, ]
+
+condicao <- legislatura_mesa_55$deputadoNome == "Luiza Erundina" & legislatura_mesa_55$ANO_ELEICAO == 2017  
+indices_linhas <- which(condicao)
+legislatura_mesa_55 <- legislatura_mesa_55[-indices_linhas, ]
+
+
+# Selecione as colunas relevantes para o seu problema
+df <- legislatura_mesa_56 %>%
+  select(deputado_.id, nomeDeputado, cargo, dataInicio, dataFim)
+
+# Converta as colunas de data para o formato Date
+df$dataInicio <- as.Date(df$dataInicio)
+df$dataFim <- as.Date(df$dataFim)
+
+# Crie uma função para expandir o intervalo de datas
+expandir_intervalo <- function(df) {
+  anos <- seq(df$dataInicio, df$dataFim, by = "year")
+  df_expandido <- data.frame(
+    deputado_.id = rep(df$deputado_.id, length(anos)),
+    deputadoNome = rep(df$nomeDeputado, length(anos)),
+    cargo = rep(df$cargo, length(anos)),
+    ANO_ELEICAO = format(anos, "%Y")
+  )
+  return(df_expandido)
+}
+
+# Aplique a função para expandir o intervalo a cada linha do seu dataframe
+legislatura_mesa_56 <- df %>%
+  rowwise() %>%
+  do(expandir_intervalo(.))
+
+
+#excluindo casos excedentes
+condicao <- legislatura_mesa_56$deputadoNome == "Mário Heringer" & legislatura_mesa_56$ANO_ELEICAO == 2021 
+indices_linhas <- which(condicao)
+legislatura_mesa_56 <- legislatura_mesa_56[-indices_linhas, ]
+
+condicao <- legislatura_mesa_56$deputadoNome == "André Fufuca" & legislatura_mesa_56$ANO_ELEICAO == 2021 
+indices_linhas <- which(condicao)
+legislatura_mesa_56 <- legislatura_mesa_56[-indices_linhas, ]
+
+condicao <- legislatura_mesa_56$deputadoNome == "Soraya Santos" & legislatura_mesa_56$ANO_ELEICAO == 2021  
+indices_linhas <- which(condicao)
+legislatura_mesa_56 <- legislatura_mesa_56[-indices_linhas, ]
+
+
+# Selecione as colunas relevantes para o seu problema
+legislatura_mesa_57 <- legislatura_mesa_57 %>%
+  select(deputado_.id, nomeDeputado, cargo, ANO_ELEICAO)
+
+
+#juntando cada base de legislatura numa base final
+legislatura_mesa_57 <- legislatura_mesa_57 %>%
+  rename(NM_CANDIDATO = nomeDeputado)
+legislatura_mesa_56 <- legislatura_mesa_56 %>%
+  rename(NM_CANDIDATO = deputadoNome)
+legislatura_mesa_55 <- legislatura_mesa_55 %>%
+  rename(NM_CANDIDATO = deputadoNome)
 
 base_final_3 <- rbind(legislatura_mesa_55, legislatura_mesa_56, legislatura_mesa_57)
 
-base_final <- base_final %>%
+save(base_final_3, file = "base_mesas.Rda")
+
+
+
+######AMPLIANDO A BASE DO TSE E JUNTANDO A BASE DE MESAS DIRETORAS NELA
+# Criar cópias para os anos de 2015 a 2017
+base_final_replicada <- lapply(1:3, function(i) {
+  df_copy <- base_final
+  df_copy$ANO_ELEICAO <- df_copy$ANO_ELEICAO + i
+  return(df_copy)
+})
+
+# Adicionar cópias para 2014 (sem replicação adicional)
+base_final_replicada <- append(list(base_final[base_final$ANO_ELEICAO == 2014, ]), base_final_replicada, after = 0)
+
+# Adicionar cópias para 2018 a 2021 (sem replicação adicional)
+base_final_replicada <- append(base_final_replicada, list(base_final[base_final$ANO_ELEICAO == 2018, ]), after = 3)
+
+# Adicionar cópias para 2022 e 2023 (sem replicação adicional)
+base_final_replicada <- append(base_final_replicada, list(base_final[base_final$ANO_ELEICAO == 2022, ]), after = 7)
+
+# Combinar as cópias com a base original
+base_final_extendida <- do.call(rbind, base_final_replicada)
+
+# Ordenar a base final pelo CPF e pelo ano
+base_final_extendida <- base_final_extendida[order(base_final_extendida$NM_CANDIDATO, base_final_extendida$ANO_ELEICAO),]
+
+# Excluir casos dos anos de 2024 e 2025
+base_final_extendida <- subset(base_final_extendida, !(ANO_ELEICAO %in% c(2024, 2025)))
+
+save(base_final_extendida, file = "base_final_extendida.Rda")
+
+
+###juntando a base das mesas a base final extendida
+
+base_final_3$ANO_ELEICAO <- as.numeric(base_final_3$ANO_ELEICAO)
+
+base_final_extendida <- base_final_extendida %>%
   left_join(base_final_3, by = c("deputado_.id", "ANO_ELEICAO"))
 
-save(base_final, file = "base_final.Rda")
+base_final_extendida$NM_CANDIDATO.y <- NULL
 
+# Substitua os NA em "cargo" por "Nenhum"
+base_final_extendida$cargo <- ifelse(is.na(base_final_extendida$cargo), "Nenhum", base_final_extendida$cargo)
+
+# Crie uma nova variável dummy chamada "cargo_dummy"
+base_final_extendida$cargo_dummy <- ifelse(base_final_extendida$cargo == "Nenhum", 0, 1)
+
+# Verifique o resultado
+head(base_final_extendida)
+
+
+save(base_final_extendida, file = "base_final_extendida.Rda")
